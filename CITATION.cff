@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: 'x402-Cardano: HTTP 402 Payment-Gated Routing on Cardano'
+version: 1.0.0
+date-released: '2026-07-09'
+type: software
+authors:
+  - family-names: Patterson
+    given-names: Richard
+    alias: De-ASI-INTERFACE
+    country: US
+repository-code: 'https://github.com/De-ASI-INTERFACE/x402-cardano-extension'
+license: MIT
+abstract: >-
+  x402 HTTP 402 payment-gated routing for Cardano eUTXO. ADA and CIP-68
+  multi-asset payment gates, Plutus V3 spending validator enforcement,
+  Minswap v2 routing, TTL expiry, UTXO replay prevention, Lean 4 proofs.
+keywords: [cardano, ada, plutus, eutxo, cip68, x402, http-402, minswap, lean4, richard-patterson]
