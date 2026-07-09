@@ -1,28 +1,33 @@
--- x402-Cardano Basic | Author: Richard Patterson (@De-ASI-INTERFACE)
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Nat.Basic
+-- ============================================================
+-- x402-Cardano: Basic Re-export Shim
+-- Author: Richard Patterson (@De-ASI-INTERFACE)
+-- Date: 2026-07-09
+-- Chain: Cardano / eUTXO / Minswap v2
+--
+-- Re-exports X402Cardano.PaymentVerification as the single
+-- authoritative source of all shared types and definitions.
+-- Chain-prefixed theorem aliases are provided for ergonomic use.
+--
+-- Note: Cardano uses the eUTXO model. The replay nonce is a
+-- UTXORef (tx_hash × tx_index), not a Nat. The Finset of
+-- spent UTXOs enforces single-spend. spent_utxos : Finset UTXORef.
+-- ============================================================
+import X402Cardano.PaymentVerification
 
 namespace X402Cardano
 
-structure UTXOPayment where
-  tx_hash  : Nat
-  tx_index : Nat
-  amount   : Nat
-  ttl_slot : Nat
-  deriving Repr, DecidableEq
+/-- Alias: eUTXO double-spend prevention under the Cardano chain prefix.
+    result type: a.utxo ∉ s.spent_utxos, where utxo : UTXORef. -/
+theorem cardano_replay_prevented
+    (a : PaymentAuth) (s : FacilitatorState) (h : verify a s) :
+    a.utxo ∉ s.spent_utxos :=
+  replay_prevented a s h
 
-structure LedgerState where
-  spent_utxos  : Finset (Nat × Nat)
-  current_slot : Nat
-  deriving Repr
-
-def verify (p : UTXOPayment) (s : LedgerState) : Prop :=
-  (p.tx_hash, p.tx_index) ∉ s.spent_utxos ∧ s.current_slot ≤ p.ttl_slot
-
-theorem cardano_utxo_unique (p : UTXOPayment) (s : LedgerState) (h : verify p s)
-    : (p.tx_hash, p.tx_index) ∉ s.spent_utxos := h.1
-
-theorem cardano_not_expired (p : UTXOPayment) (s : LedgerState) (h : verify p s)
-    : s.current_slot ≤ p.ttl_slot := h.2
+/-- Alias: TTL slot expiry enforcement under the Cardano chain prefix.
+    Delegates to within_expiry: s.current_slot ≤ a.ttl_slot. -/
+theorem cardano_not_expired
+    (a : PaymentAuth) (s : FacilitatorState) (h : verify a s) :
+    s.current_slot ≤ a.ttl_slot :=
+  within_expiry a s h
 
 end X402Cardano
